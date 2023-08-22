@@ -115,7 +115,14 @@ async function getMovieById(id) {
     movieDetailDescription.textContent = movie.overview;
     movieDetailScore.textContent = movie.vote_average;
 
-
     createCtegories(movie.genres, movieDetailCategoriesList)
-
+    getRelatedMoviesId(id)
 }
+
+async function getRelatedMoviesId(id){
+    const { data } = await api(`movie/${id}/recommendations`)
+    const relatedMovies = data.results
+
+    createMovies(relatedMovies, relatedMoviesContainer)
+}
+
