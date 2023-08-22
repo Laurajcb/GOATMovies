@@ -14,6 +14,9 @@ function createMovies(movies, container) {
     movies.forEach(movie => {
         const movieContainer = document.createElement('div');
         movieContainer.classList.add('movie-container');
+        movieContainer.addEventListener('click', () => {
+            location.hash = '#movie=' + movie.id
+        })
 
         const movieImg = document.createElement('img');
         movieImg.classList.add('movie-img');
@@ -50,9 +53,7 @@ function createCtegories(categories, container) {
     });
 }
 
-// API CALLS
-
-
+// Api llamados
 async function getTrendingMoviesPreview() {
     const { data } = await api('trending/movie/day');
     const movies = data.results;
@@ -63,7 +64,7 @@ async function getCategegoriesPreview() {
     const { data } = await api('genre/movie/list');
     const categories = data.genres;
 
-    createCtegories(categories,categoriesPreviewList )
+    createCtegories(categories, categoriesPreviewList)
 }
 
 async function getMoviesByCategory(id) {
@@ -74,4 +75,47 @@ async function getMoviesByCategory(id) {
     });
     const movies = data.results;
     createMovies(movies, genericSection)
+}
+
+
+async function getMoviesBySearch(query) {
+    const { data } = await api('search/movie', {
+        params: {
+            query,
+        },
+    });
+    const movies = data.results;
+    createMovies(movies, genericSection)
+}
+
+
+async function getTrendingMovies() {
+    const { data } = await api('trending/movie/day');
+    const movies = data.results;
+
+
+    createMovies(movies, genericSection)
+}
+
+async function getMovieById(id) {
+    const { data: movie } = await api('/movie/' + id);
+
+    const movieImgUrl = 'https://image.tmdb.org/t/p/w500' + movie.poster_path;
+    //console.log(movieImgUrl)
+    headerSection.style.background = `
+    linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 19.27%,
+    rgba(0, 0, 0, 0) 29.17%
+    ),
+    url(${movieImgUrl})`;
+
+
+    movieDetailTitle.textContent = movie.title;
+    movieDetailDescription.textContent = movie.overview;
+    movieDetailScore.textContent = movie.vote_average;
+
+
+    createCtegories(movie.genres, movieDetailCategoriesList)
+
 }
